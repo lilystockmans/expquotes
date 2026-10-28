@@ -1,0 +1,1 @@
+"If you’re going to try, go all the way" Bukowski
