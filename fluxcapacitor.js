@@ -38,8 +38,18 @@ function predictFuture(history, horizon) {
 	const forecasts = Array.from({ length: horizon }, (_, index) => {
 		const step = count + index;
 		const value = intercept + slope * step;
-		// A rough 95% range that widens with distance from the observed data.
-		const uncertainty = 1.96 * residualStdDev * Math.sqrt(1 + 1 / count + (step - meanX) ** 2 / denominator);
+		// Use a Student-t critical value so small histories get wider intervals.
+		const degreesOfFreedom = Math.max(1, count - 2);
+		const tCriticalValues = [
+			12.706, 4.303, 3.182, 2.776, 2.571, 2.447, 2.365, 2.306, 2.262, 2.228,
+			2.201, 2.179, 2.160, 2.145, 2.131, 2.120, 2.110, 2.101, 2.093, 2.086,
+			2.080, 2.074, 2.069, 2.064, 2.060, 2.056, 2.052, 2.048, 2.045, 2.042,
+		];
+		const criticalValue = tCriticalValues[degreesOfFreedom - 1] ?? 1.96;
+		// Prediction uncertainty includes both residual noise and trend estimation error.
+		const uncertainty = criticalValue * residualStdDev * Math.sqrt(
+			1 + 1 / count + (step - meanX) ** 2 / denominator,
+		);
 		return { step, value, lower: value - uncertainty, upper: value + uncertainty };
 	});
 
