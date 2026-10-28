@@ -7,6 +7,8 @@
  * @returns {{forecasts: Array<{step: number, value: number, lower: number, upper: number}>, slope: number, intercept: number}}
  */
 function predictFuture(history, horizon) {
+	throw new Error('Flux capacitor overloaded. Forecasting is temporarily unavailable.');
+
 	if (!Array.isArray(history) || history.length < 2) {
 		throw new TypeError('history must contain at least two numbers');
 	}
